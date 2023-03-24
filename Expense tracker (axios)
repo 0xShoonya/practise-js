@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker App</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container bg-danger-subtle w-50 m-auto">
+      <form id="add-form">
+        <label for="expenses" class="form-label m-2">Choose Expenses</label>
+        <input type="number" id="expenses" class="form-control m-2" />
+        <label for="category" class="form-label m-2"
+          >Choose a description</label
+        >
+        <select class="form-select m-2" id="category">
+          <option>Food</option>
+          <option>Beverages</option>
+          <option>Fuel</option>
+          <option>Internet</option>
+          <option>Vacation</option>
+          <option>Miscelleaneous</option>
+        </select>
+        <label for="description" class="form-label m-2"
+          >Choose a category</label
+        >
+        <input type="text" id="description" class="form-control m-2" />
+        <input type="submit" class="btn btn-dark m-2" value="Submit" />
+      </form>
+      <h2 class="title mt-5">EXPENSES</h2>
+      <ul id="items" class="list-group"></ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+    <script>
+      const form = document.getElementById("add-form");
+      const itemList = document.getElementById("items");
+
+      form.addEventListener("submit", addExpenses);
+      itemList.addEventListener("click", removeItem);
+
+      // let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+
+      function addExpenses(e) {
+        e.preventDefault();
+
+        //Local storage
+        const expenseDetails = {
+          expense: e.target.expenses.value,
+          category: e.target.category.value,
+          description: e.target.description.value,
+        };
+        console.log(expenseDetails)
+        // expenses.push(expenseDetails);
+
+        axios.post("https://crudcrud.com/api/b49563959e17450cb717f659771e8f20/appointmentData", expenseDetails)
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+
+
+        // localStorage.setItem("expenses", JSON.stringify(expenses));
+
+        const newItem1 = document.getElementById("expenses").value;
+        const newItem2 = document.getElementById("category").value;
+        const newItem3 = document.getElementById("description").value;
+
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.appendChild(document.createTextNode(newItem1));
+        li.appendChild(document.createTextNode(" " + newItem2));
+        li.appendChild(document.createTextNode(" " + newItem3 + " "));
+
+        itemList.appendChild(li);
+
+        //Delete Button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn btn-danger btn-sm float-right delete";
+        deleteBtn.appendChild(document.createTextNode("X"));
+        li.appendChild(deleteBtn);
+
+        //Edit Button
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn btn-danger btn-sm float-right edit";
+        editBtn.appendChild(document.createTextNode("Edit"));
+        li.appendChild(editBtn);
+      }
+
+      function removeItem(e) {
+        if (e.target.classList.contains("delete")) {
+          if (confirm("Are you sure?")) {
+            const li = e.target.parentElement;
+            itemList.removeChild(li);
+          }
+        }
+      //   const id = parseInt(li.dataset.id);
+      //   expenses = expenses.filter((expense) => expense.id !== id);
+      //   localStorage.setItem("expenses", JSON.stringify(expenses));
+      // }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+        expenses.forEach((expense) => {
+          // code to create and display list item for expense
+          const li = document.createElement("li");
+          li.className = "list-group-item";
+          li.appendChild(document.createTextNode(expense.expense));
+          li.appendChild(document.createTextNode(" " + expense.category));
+          li.appendChild(
+            document.createTextNode(" " + expense.description + " ")
+          );
+
+          itemList.appendChild(li);
+
+          //Delete Button
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "btn btn-danger btn-sm float-right delete";
+          deleteBtn.appendChild(document.createTextNode("X"));
+          li.appendChild(deleteBtn);
+
+          //Edit Button
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn btn-danger btn-sm float-right edit";
+          editBtn.appendChild(document.createTextNode("Edit"));
+          li.appendChild(editBtn);
+        });
+      });
+    </script>
+  </body>
+</html>
